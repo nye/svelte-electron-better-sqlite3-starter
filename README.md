@@ -1,4 +1,4 @@
-My starter to built Electron apps with Svelte and Better SQLite3.
+An starter to built Electron apps with Svelte and Better SQLite3.  
 
 * Electron  
 * Svelte  
