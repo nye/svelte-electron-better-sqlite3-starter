@@ -79,7 +79,7 @@ function createWindow() {
 	// Windows events
 	mainWindow.on('close', (e) => {
 		if(mainWindow.isDocumentEdited()){
-			var choice = require('electron').dialog.showMessageBoxSync(this, {
+			var choice = require('electron').dialog.showMessageBoxSync(mainWindow, {
 				type: 'question',
 				buttons: ['Yes', 'No'],
 				title: 'Confirm',
