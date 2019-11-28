@@ -1,0 +1,28 @@
+My starter to built Electron apps with Svelte and Better SQLite3.
+
+* Electron  
+* Svelte  
+* Better SQLite3
+* Rollup.js  
+* Preprocess (svelte-preprocess) for SCSS in components and globally  
+* Live reload  
+* Router (with hash routing)  
+* Some Electron optimizations (Icons, platform install options, Remember window size and position, Confirm before quit if `DocumentEdited`, Save app settings, [InterUI](https://rsms.me/inter/) font, ...)  
+
+
+## Get started
+
+Install the dependencies...
+
+```bash
+cd svelte-electron-better-sqlite3-starter
+npm install
+```
+
+...then start [Rollup](https://rollupjs.org) with electron:
+
+```bash
+npm run electron-dev
+```
+
+See `package.json` scripts for other build options

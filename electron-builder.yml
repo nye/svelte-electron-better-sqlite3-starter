@@ -1,0 +1,41 @@
+productName: "svelte-electron-better-sqlite3-starter"
+appId: "cat.nye.svelte-electron-better-sqlite3-starter"
+copyright: "Copyright © 2019 Albert Sunyer Vilafranca"
+
+# Package app code into a asar archive. Set to false to debug issues.
+asar: true
+
+# Mac OS configuration
+mac:
+  icon: "public/img/icon.icns"
+  category: "public.app-category.utilities"
+
+# Config for OSX dmg
+dmg:
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: "link"
+      path: "/Applications"
+
+# Windows configuration
+win:
+  icon: "public/img/icon.ico"
+  target:
+    - "zip"
+    - "nsis"
+
+# Config for the windows installer
+nsis:
+  oneClick: true
+  perMachine: true
+
+# Linux configuration
+linux:
+  category: Development
+  target:
+    - "AppImage"
+    - "deb"
+    - "rpm"
