@@ -7,7 +7,7 @@ An starter to built Electron apps with Svelte and Better SQLite3.
 * Preprocess (svelte-preprocess) for SCSS in components and globally  
 * Live reload  
 * Router (with hash routing)  
-* Some Electron optimizations (Icons, platform install options, Remember window size and position, Confirm before quit if `DocumentEdited`, Save app settings, [InterUI](https://rsms.me/inter/) font, ...)  
+* App icons, Platform install options, Remember window size and position, Confirm before quit if `DocumentEdited`, Persist app settings, [InterUI](https://rsms.me/inter/) font, ...  
 
 
 ## Get started
