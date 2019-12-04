@@ -5,6 +5,9 @@ copyright: "Copyright © 2019 Albert Sunyer Vilafranca"
 # Package app code into a asar archive. Set to false to debug issues.
 asar: true
 
+extraResources:
+	- "database.db"
+
 # Mac OS configuration
 mac:
   icon: "public/img/icon.icns"

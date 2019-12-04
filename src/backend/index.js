@@ -1,8 +1,15 @@
+const { app } = require('electron');
 const { ipcMain: ipc } = require('electron-better-ipc');
 const mode = process.env.NODE_ENV;
 
 exports.comunicateWithRenderer = () => {
-	const db = require('better-sqlite3')('database.db', {verbose: mode === 'development' ? console.log : false});
+	let db;
+
+	if(mode === 'development'){
+		db = require('better-sqlite3')('database.db', {verbose: console.log});
+	}else{
+		db = require('better-sqlite3')(app.getPath('userData') + '/database.db');
+	}
 
 	/**
 	 * Get User by id

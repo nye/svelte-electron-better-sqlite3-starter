@@ -86,7 +86,7 @@ function createWindow() {
 				message: 'Are you sure you want to quit?'
 			});
 
-			if(choice == 1) e.preventDefault();
+			if(choice === 1) e.preventDefault();
 		}
 	});
 
