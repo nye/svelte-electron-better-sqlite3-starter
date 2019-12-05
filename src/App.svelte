@@ -5,18 +5,18 @@
 
 	import { isLoading } from './stores/ui';
 
+	import { init as ipcInit } from './ipc';
 	import GlobalStyles from './styles/GlobalStyles.svelte';
 	import Topbar from './components/Topbar.svelte';
+
+	// Init IPC comunication with the backend
+	ipcInit();
 
 	// LOADING //////////////////////////
 
 	isLoading.set(true);
 
-	const win = window.remote.getCurrentWindow();
-
 	const unsubscribe = isLoading.subscribe(value => {
-		win.setDocumentEdited(value);
-
 		if(value) console.log('is loading');
 		else console.log('is NOT loading');
 	});

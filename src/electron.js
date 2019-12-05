@@ -1,18 +1,20 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
+const { fork } = require('child_process');
 const settings = require('electron-settings');
+let isDev = require('electron-is-dev');
 
-const comunicateWithRenderer = require('./backend/index').comunicateWithRenderer;
+const findOpenSocket = require('./backend/find-open-socket');
 const setupApplicationMenu = require('./backend/applicationMenu').setupApplicationMenu;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
+let backendWindow;
+let backendProcess;
 let windowState = {};
 
-function createWindow() {
-	const mode = process.env.NODE_ENV;
-
+function createWindow(serverSocket){
 	mainWindow = new BrowserWindow({
 		webPreferences: {
 			nodeIntegration: false,
@@ -28,9 +30,6 @@ function createWindow() {
 		backgroundColor: '#FFFFFF',
 		show: false
 	});
-
-	// Listen to renderer calls for backend operations
-	comunicateWithRenderer();
 
 	// Set the main app menú
 	setupApplicationMenu(mainWindow);
@@ -65,7 +64,7 @@ function createWindow() {
 	// Development stuff
 	let watcher;
 
-    if (mode === 'development') {
+    if(isDev){
 		// If we are developers we might as well open the devtools by default.
 		mainWindow.webContents.openDevTools();
 
@@ -74,7 +73,13 @@ function createWindow() {
         watcher.on('change', () => {
             mainWindow.reload();
         });
-    }
+	}
+
+	mainWindow.webContents.on('did-finish-load', () => {
+		mainWindow.webContents.send('set-socket', {
+		  	name: serverSocket
+		});
+	});
 
 	// Windows events
 	mainWindow.on('close', (e) => {
@@ -99,16 +104,60 @@ function createWindow() {
 	});
 }
 
+function createBackgroundProcess(socketName){
+	backendProcess = fork(__dirname + '/backend/backend.js', [
+		'--subprocess',
+		app.getVersion(),
+		socketName,
+		app.getPath('userData')
+	]);
+
+	backendProcess.on('message', msg => {
+	  	console.log(msg)
+	});
+}
+
+function createBackgroundWindow(socketName){
+	const win = new BrowserWindow({
+		x: 500,
+		y: 300,
+		width: 700,
+		height: 500,
+		show: true,
+		webPreferences: {
+			nodeIntegration: true
+		}
+	});
+
+	win.loadURL(`file://${__dirname}/backend/index.html`);
+
+	win.webContents.on('did-finish-load', () => {
+		win.webContents.send('set-socket', { name: socketName });
+	});
+
+	backendWindow = win;
+  }
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', async () => {
+	const serverSocket = await findOpenSocket();
+
+	createWindow(serverSocket);
+
+	if(isDev){
+		createBackgroundWindow(serverSocket);
+	}else{
+		createBackgroundProcess(serverSocket);
+	}
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== 'darwin') {
+    if(process.platform !== 'darwin'){
         app.quit();
     }
 });
@@ -116,7 +165,14 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (mainWindow === null) {
+    if(mainWindow === null){
         createWindow();
     }
+});
+
+app.on('before-quit', () => {
+	if(backendProcess){
+		backendProcess.kill();
+		backendProcess = null;
+	}
 });

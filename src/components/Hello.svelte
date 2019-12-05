@@ -1,18 +1,25 @@
 <script>
 	import { isLoading } from './../stores/ui';
+	import { send } from './../ipc';
 
-	const handleSayHelloClick = async () => {
+	const handleTest1Click = async () => {
+		alert(await send('test'));
+	};
+
+	const handleTest2Click = async () => {
 		isLoading.set(true);
 
-		const user = await window.ipc.callMain('get-user', 1);
+		const user = await send('get-user', { user_id: 1 });
 
-		alert('Hello ' + user.name + '!');
+		alert("I'm " + user.name + "!");
+
 		isLoading.set(false);
 	};
 </script>
 
 
-<button type="button" class="btn" on:click|preventDefault={handleSayHelloClick}>Say Hello</button>
+<button type="button" class="btn" on:click|preventDefault={handleTest1Click}>Test</button>
+<button type="button" class="btn" on:click|preventDefault={handleTest2Click}>Get my name from the database</button>
 
 
 <style lang="scss">
