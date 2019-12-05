@@ -3,7 +3,7 @@ An starter to built Electron apps with Svelte and Better SQLite3.
 * Electron  
 * Svelte  
 * Better SQLite3
-* Backend server in a separate process wired via IPC for a non-blocking render process  
+* Backend server in a separate process wired via IPC for a non-blocking render process (see [jlongster/electron-with-server-example](https://github.com/jlongster/electron-with-server-example))  
 * Rollup.js  
 * Preprocess (svelte-preprocess) for SCSS in components and globally  
 * Live reload  
