@@ -12,9 +12,10 @@ const setupApplicationMenu = require('./backend/applicationMenu').setupApplicati
 let mainWindow;
 let backendWindow;
 let backendProcess;
+let serverSocket;
 let windowState = {};
 
-function createWindow(serverSocket){
+function createMainWindow(serverSocket){
 	mainWindow = new BrowserWindow({
 		webPreferences: {
 			nodeIntegration: false,
@@ -104,53 +105,46 @@ function createWindow(serverSocket){
 	});
 }
 
-function createBackgroundProcess(socketName){
-	backendProcess = fork(__dirname + '/backend/backend.js', [
-		'--subprocess',
-		app.getVersion(),
-		socketName,
-		app.getPath('userData')
-	]);
+function createBackendProcess(socketName){
+	if(isDev){
+		backendWindow = new BrowserWindow({
+			x: 500,
+			y: 300,
+			width: 700,
+			height: 500,
+			show: true,
+			webPreferences: {
+				nodeIntegration: true
+			}
+		});
 
-	backendProcess.on('message', msg => {
-	  	console.log(msg)
-	});
+		backendWindow.loadURL(`file://${path.join(__dirname, '/backend/index.html')}`);
+
+		backendWindow.webContents.on('did-finish-load', () => {
+			backendWindow.webContents.send('set-socket', { name: socketName });
+		});
+	}else{
+		backendProcess = fork(__dirname + '/backend/backend.js', [
+			'--subprocess',
+			app.getVersion(),
+			socketName,
+			path.join(__dirname, '..', '..'),
+			app.getPath('userData')
+		]);
+
+		backendProcess.on('message', msg => {
+			console.log(msg)
+		});
+	}
 }
-
-function createBackgroundWindow(socketName){
-	const win = new BrowserWindow({
-		x: 500,
-		y: 300,
-		width: 700,
-		height: 500,
-		show: true,
-		webPreferences: {
-			nodeIntegration: true
-		}
-	});
-
-	win.loadURL(`file://${__dirname}/backend/index.html`);
-
-	win.webContents.on('did-finish-load', () => {
-		win.webContents.send('set-socket', { name: socketName });
-	});
-
-	backendWindow = win;
-  }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
-	const serverSocket = await findOpenSocket();
-
-	createWindow(serverSocket);
-
-	if(isDev){
-		createBackgroundWindow(serverSocket);
-	}else{
-		createBackgroundProcess(serverSocket);
-	}
+	serverSocket = await findOpenSocket();
+	createMainWindow(serverSocket);
+	createBackendProcess(serverSocket);
 });
 
 // Quit when all windows are closed.
@@ -166,7 +160,7 @@ app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if(mainWindow === null){
-        createWindow();
+        createMainWindow(serverSocket);
     }
 });
 

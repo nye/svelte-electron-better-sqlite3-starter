@@ -22,7 +22,7 @@ async function findOpenSocket() {
 
 	console.log('checking', currentSocket);
 
-  	while (await isSocketTaken(app.name + currentSocket)) {
+  	while(await isSocketTaken(app.name + currentSocket)){
     	currentSocket++;
     	console.log('checking', currentSocket);
 	}

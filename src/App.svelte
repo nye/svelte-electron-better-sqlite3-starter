@@ -7,7 +7,7 @@
 
 	import { init as ipcInit } from './ipc';
 	import GlobalStyles from './styles/GlobalStyles.svelte';
-	import Topbar from './components/Topbar.svelte';
+	import Topbar from './common/Topbar.svelte';
 
 	// Init IPC comunication with the backend
 	ipcInit();
