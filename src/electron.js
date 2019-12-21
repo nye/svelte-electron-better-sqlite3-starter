@@ -119,6 +119,7 @@ function createBackendProcess(socketName){
 		});
 
 		backendWindow.loadURL(`file://${path.join(__dirname, '/backend/index.html')}`);
+		backendWindow.webContents.openDevTools();
 
 		backendWindow.webContents.on('did-finish-load', () => {
 			backendWindow.webContents.send('set-socket', { name: socketName });
