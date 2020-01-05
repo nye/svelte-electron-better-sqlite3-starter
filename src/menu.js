@@ -1,8 +1,8 @@
 const { app, Menu } = require('electron');
-const mode = process.env.NODE_ENV;
+const isDev = require('electron-is-dev');
 
 exports.setupApplicationMenu = (mainWindow) => {
-	const menu = [{
+	let menu = [{
 		label: app.name,
 		role: 'appMenu'
 	}, {
@@ -14,13 +14,6 @@ exports.setupApplicationMenu = (mainWindow) => {
 	}, {
 		label: 'View',
 		submenu: [{
-			label: 'Toggle Developer Tools',
-			role: 'toggleDevTools',
-			visible: mode === 'development'
-		}, {
-			type: 'separator',
-			visible: mode === 'development'
-		}, {
 			label: 'Actual Size',
 			role: 'resetZoom'
 		}, {
@@ -39,6 +32,19 @@ exports.setupApplicationMenu = (mainWindow) => {
 		label: 'Window',
 		role: 'windowMenu'
 	}];
+
+	if(isDev){
+		menu.push({
+			label: 'Development',
+			submenu: [{
+				label: 'Toggle Developer Tools',
+				role: 'toggleDevTools'
+			}, {
+				label: 'Reload window',
+				click: () => mainWindow.reload()
+			}]
+		});
+	}
 
 	if (process.platform === 'darwin') {
 		Menu.setApplicationMenu(Menu.buildFromTemplate(menu));

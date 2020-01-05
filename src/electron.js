@@ -5,7 +5,7 @@ const settings = require('electron-settings');
 let isDev = require('electron-is-dev');
 
 const findOpenSocket = require('./backend/find-open-socket');
-const setupApplicationMenu = require('./backend/applicationMenu').setupApplicationMenu;
+const setupApplicationMenu = require('./menu').setupApplicationMenu;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -16,6 +16,8 @@ let serverSocket;
 let windowState = {};
 
 function createMainWindow(serverSocket){
+	windowState = settings.get('windowState', {});
+
 	mainWindow = new BrowserWindow({
 		webPreferences: {
 			nodeIntegration: false,
@@ -44,8 +46,6 @@ function createMainWindow(serverSocket){
 	});
 
 	// Manage window settings
-	windowState = settings.get('windowState', {});
-
 	if(settings.get('isMaximized')){
 		mainWindow.maximize();
 	}
